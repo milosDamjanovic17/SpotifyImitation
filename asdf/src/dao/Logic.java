@@ -2,6 +2,7 @@ package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import connect.CommonConnectMethod;
@@ -9,6 +10,19 @@ import model.Artist;
 
 public class Logic {
 	
+	private void resultSetClose(ResultSet rs) {
+		
+		if(rs != null) {
+			try {
+				rs.close();
+				System.out.println("ResultSet is closed");
+			} catch (SQLException e) {
+				System.out.println("ResultSet is not closed.");
+				e.printStackTrace();
+			}
+		}
+		
+	}
 	private void preparedStatementClose(PreparedStatement ps) {
 		
 		if(ps != null) {
@@ -114,6 +128,41 @@ public class Logic {
 			connectionShut(con);
 		}
 		
+		
+	}
+
+	public String selektujID(String stageName) {
+		String check = "0";
+		
+		Connection con = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try {
+			con = CommonConnectMethod.serverConnect("Spotify");
+			System.out.println("Successfully connected to DB Spotify");
+			String sql = "SELECT id FROM Artist WHERE stage_name = ?";
+			pst = con.prepareStatement(sql);
+				pst.setString(1, stageName);
+			
+			rs = pst.executeQuery();
+			
+			while(rs.next()) {
+				check = rs.getString("id");
+				
+			}
+				
+		} catch (SQLException e) {
+			System.out.println("Connection to DB failed.");
+			e.printStackTrace();
+		} finally {
+			resultSetClose(rs);
+			preparedStatementClose(pst);
+			connectionShut(con);
+		}
+		
+
+		return check;
 		
 	}
 	
