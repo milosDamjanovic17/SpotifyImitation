@@ -160,11 +160,49 @@ public class Logic {
 			preparedStatementClose(pst);
 			connectionShut(con);
 		}
-		
-
 		return check;
 		
 	}
 	
+	public Artist returnArtistDetails (String id) {
+		
+		Artist artist = new Artist();
+		
+		Connection con = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try {
+			con = CommonConnectMethod.serverConnect("Spotify");
+			System.out.println("Connected to DB");
+			String sql = "SELECT * FROM artist WHERE id = ?";
+			pst = con.prepareStatement(sql);
+				pst.setInt(1, Integer.parseInt(id));
+			
+			rs = pst.executeQuery();
+			while(rs.next()) {
+				artist.setId(rs.getInt("id"));
+				artist.setFirstName(rs.getString("first_name"));
+				artist.setLastName(rs.getString("last_name"));
+				artist.setStageName(rs.getString("stage_name"));
+				artist.setLabel(rs.getString("label"));
+				artist.setState(rs.getInt("state"));
+				artist.setTop10(rs.getInt("times_in_top10chart"));
+				
+			} 
+			
+				
+			
+		} catch (SQLException e) {
+			System.out.println("Failed to execute operation.");
+			e.printStackTrace();
+		} finally {
+			resultSetClose(rs);
+			preparedStatementClose(pst);
+			connectionShut(con);
+		}
+		
+		return artist;
+	}
 	
 }

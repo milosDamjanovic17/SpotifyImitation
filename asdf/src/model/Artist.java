@@ -1,7 +1,8 @@
 package model;
 
 public class Artist {
-
+	
+	private int id;
 	private String firstName;
 	private String lastName;
 	private String stageName;
@@ -11,6 +12,12 @@ public class Artist {
 	
 	
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getFirstName() {
 		return firstName;
 	}
