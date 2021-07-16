@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import connect.CommonConnectMethod;
 import model.Artist;
+import model.ArtistGenre;
 
 public class Logic {
 	
@@ -204,5 +207,46 @@ public class Logic {
 		
 		return artist;
 	}
+	public List<ArtistGenre> returnAGmethod(String id) {
+		List <ArtistGenre> localListAG = new ArrayList <ArtistGenre>();
+		
+		Connection con = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try {
+			con = CommonConnectMethod.serverConnect("Spotify");
+			System.out.println("Connected to DB");
+			String query = "SELECT a.id,a.stage_name, g.genre_name\n"
+					+ "FROM artist_genre ag\n"
+					+ "INNER JOIN artist a ON ag.artist_id = a.id\n"
+					+ "INNER JOIN genre g ON ag.genre_id = g.id_genre\n"
+					+ "WHERE a.id = ?";
+			pst = con.prepareStatement(query);
+				pst.setInt(1, Integer.parseInt(id));
+			rs = pst.executeQuery();
+			
+			while(rs.next()) {
+				ArtistGenre localWrapper = new ArtistGenre();
+				
+				localWrapper.setId(rs.getInt("id"));
+				localWrapper.setStage_name(rs.getString("stage_name"));
+				localWrapper.setGenre_name(rs.getString("genre_name"));
+				
+			localListAG.add(localWrapper);	
+				
+			}
+		} catch (SQLException e) {
+			System.out.println("Execution of returnAGmethod failed.");
+			e.printStackTrace();
+		} finally {
+			resultSetClose(rs);
+			preparedStatementClose(pst);
+			connectionShut(con);
+		}
+		
+		return localListAG;
+	}
+	
 	
 }
